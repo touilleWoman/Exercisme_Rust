@@ -1,39 +1,27 @@
 use std::char;
 
 pub fn count(minefield: &[&str], row: &str, i: usize, j: usize) -> char {
-    let mut nb = 0;
-    if j > 0 && row.chars().nth(j - 1).unwrap() == '*' {
-        nb += 1;
-    }
-    if j + 1 < row.len() && row.chars().nth(j + 1).unwrap() == '*' {
-        nb += 1;
-    }
-    if i > 0 && minefield[i - 1].chars().nth(j).unwrap() == '*' {
-        nb += 1;
-    }
-    if i > 0 && j > 0 && minefield[i - 1].chars().nth(j - 1).unwrap() == '*' {
-        nb += 1;
-    }
-    if i > 0 && j + 1 < row.len() && minefield[i - 1].chars().nth(j + 1).unwrap() == '*' {
-        nb += 1;
-    }
-    if i + 1 < minefield.len() && minefield[i + 1].chars().nth(j).unwrap() == '*' {
-        nb += 1;
-    }
-    if i + 1 < minefield.len() && j > 0 && minefield[i + 1].chars().nth(j - 1).unwrap() == '*' {
-        nb += 1;
-    }
-    if i + 1 < minefield.len()
-        && j + 1 < row.len()
-        && minefield[i + 1].chars().nth(j + 1).unwrap() == '*'
+    static NEIGHBOUR: [(i32, i32); 8] = [
+        (-1, -1),
+        (0, -1),
+        (1, -1),
+        (-1, 0),
+        (1, 0),
+        (-1, 1),
+        (0, 1),
+        (1, 1),
+    ];
+    let height = minefield.len() as i32;
+    let width = row.len() as i32;
+    match NEIGHBOUR
+        .iter()
+        .map(|(a, b)| (i as i32 + a, j as i32 + b))
+        .filter(|(x, y)| *x >= 0 && *x < height && *y >= 0 && *y < width)
+        .filter(|(x, y)| minefield[*x as usize].chars().nth(*y as usize).unwrap() == '*')
+        .count()
     {
-        nb += 1;
-    }
-
-    if nb == 0 {
-        return ' ';
-    } else {
-        return char::from_digit(nb, 10).unwrap();
+        0 => ' ',
+        nb => char::from_digit(nb as u32, 10).unwrap(),
     }
 }
 
